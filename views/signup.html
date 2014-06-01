@@ -1,0 +1,22 @@
+<div>
+<h3>Create an Account</h3>
+<form name="signupForm" class="simple-form" ng-submit="signup()" ng-show="user">
+        Name: <input type="text" ng-required="true" ng-model="user.fullname" /><br />
+        E-mail: <input type="email" ng-required="true" ng-model="user.email" /><br />
+        Password: <input type="password" ng-required="true" ng-model="user.password" /><br />
+        <button ng-disabled="signupForm.$invalid" class="btn btn-primary" type="submit">Signup</button>
+ </form>
+
+<h3>Sign up using Facebook</h3>
+<div id="fb-root"></div>
+<script>
+
+</script>
+<!--
+  Below we include the Login Button social plugin. This button uses the JavaScript SDK to
+  present a graphical Login button that triggers the FB.login() function when clicked. -->
+
+<fb:login-button show-faces="true" width="200" max-rows="1" scope="email,user_likes,user_about_me,user_photos"></fb:login-button>
+
+
+</div>

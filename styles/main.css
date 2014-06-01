@@ -1,0 +1,256 @@
+body, html {
+    padding: 0;
+}
+
+ul {
+    list-style: none;
+}
+
+li {
+
+}
+
+legend {
+    border-bottom: none;
+    padding: 0;
+    margin-bottom: 20px;
+}
+
+.container {
+    margin: 0 auto;
+    padding: 0;
+    /*width: 700px;*/
+}
+
+#main-container {
+    /*margin-left: 250px;*/
+}
+
+#glide {
+    background: #0F6BA9;
+	color: #999;
+    height: 30px;
+    width: 120px;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+	line-height: 30px;
+	text-align: center;
+}
+#glide:hover {
+	background: #000;
+	color: #FFF;
+}
+
+#wrapper {
+    transition: all 0.4s ease 0s;
+}
+
+#sidebar-wrapper {
+    float: left;
+    width: 250px;
+    position: fixed;
+    height: 100%;
+    overflow-y: auto;
+    z-index: 1000;
+    transition: all 0.4s ease 0s;
+}
+
+#page-content-wrapper {
+    width: 100%;
+}
+
+.sidebar-nav {
+    position: absolute;
+    top: 0;
+    width: 250px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.sidebar-nav li {
+    line-height: 40px;
+    text-indent: 20px;
+}
+
+.sidebar-nav li .active {
+    color: #fff;
+    background: #0F6BA9;
+}
+
+.sidebar-nav li a {
+    color: #999999;
+    display: block;
+    text-decoration: none;
+}
+
+.sidebar-nav li a:hover {
+    color: #fff;
+    background: rgba(255,255,255,0.2);
+    text-decoration: none;
+}
+
+.sidebar-nav li a:active,
+.sidebar-nav li a:focus {
+    text-decoration: none;
+}
+
+.sidebar-nav > .sidebar-brand {
+    height: 65px;
+    line-height: 60px;
+    font-size: 18px;
+}
+
+.sidebar-nav > .sidebar-brand a {
+    color: #999999;
+}
+
+.sidebar-nav > .sidebar-brand a:hover {
+    color: #fff;
+    background: none;
+}
+
+.content-header {
+    height: 65px;
+    line-height: 65px;
+}
+
+.content-header h1 {
+    margin: 0;
+    margin-left: 20px;
+    line-height: 60px;
+    display: inline-block;
+}
+
+#menu-toggle {
+    display: none;
+}
+
+.inset {
+    padding: 20px;
+}
+
+.inset-top {
+    padding: 20px 0;
+}
+
+@media (max-width:767px) {
+
+    #wrapper {
+        padding-left: 0;
+    }
+
+    #sidebar-wrapper {
+        left: 0;
+    }
+
+    #wrapper.active {
+        position: relative;
+        left: 250px;
+    }
+
+    #wrapper.active #sidebar-wrapper {
+        left: 250px;
+        width: 250px;
+        transition: all 0.4s ease 0s;
+    }
+
+    #menu-toggle {
+        /*display: inline-block;*/
+    }
+
+    .inset {
+        padding: 15px;
+    }
+
+}
+
+.gridStyle {
+    border: 1px solid rgb(212,212,212);
+    width: 100%;
+    height: 500px;
+}
+
+.miniTitle {
+    font-size: 18px;
+    line-height: 1px;
+}
+
+.legendTitle {
+    font-size: 45px;
+}
+
+#company_name, #state {
+    background: white;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    box-shadow: none;
+    border-radius: 0;
+}
+
+.card-style { 
+    margin-bottom: 20px; 
+    box-shadow: -webkit-box-shadow: 0 8px 6px -6px black; 
+    -moz-box-shadow: 0 8px 6px -6px black; 
+    box-shadow: 0 8px 6px -6px black;
+}
+
+.top-card {
+    background: #FAFAFA; 
+    height: 120px;
+    padding: 10px;
+}
+
+.card-title {
+    /*font-size: 16px;*/
+    font-weight: bold;
+    width: 34%;
+}
+
+.card-exp {
+    margin-bottom: 3px;
+    width: 56%;
+}
+
+.bottom-card {
+    background: #609CE4; 
+    padding: 10px;
+    min-height: 100px;
+}
+
+.org-name {
+    font-size: 25px;
+    font-weight: bold;
+}
+
+#state {
+    -webkit-appearance: none;
+}
+
+.-searchBar {
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    border-bottom: 1px solid black;
+
+    height: 5px;
+}
+
+#ctrlNav {
+    background: #777;
+    display: none;
+    position: fixed;
+    height: 100%;
+    width: 40px;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    opacity: 0.9;
+}
+
+/*Table*/
+.ngTopPanel {
+    background: #609CE4;
+}

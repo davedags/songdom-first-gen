@@ -1,0 +1,24 @@
+<?php
+
+class BaseUtil {
+	
+	public static function initDB($args = array()) {
+		$db = new PDO('mysql:host=localhost;dbname=davedago_dirty;charset=utf8', 'davedago_dirty', 'dirty123');
+		$GLOBALS['_db'] = $db;
+		return $db;
+	}
+	
+	public static function getDB($args = array()) {
+		global $app;
+		if (is_object($app) && is_object($app['db'])) {
+		   $GLOBALS['_db'] = $app['db'];
+		   return $app['db'];  
+		}
+		static $db = false;
+		if ($db === false) {
+			$db = self::initDB($args);
+		}
+		return $db;
+	}
+}
+

@@ -1,0 +1,8 @@
+<div style="margin:20px;">
+<h4>Log-In</h4>
+<form name="loginForm" class="simple-form" ng-submit="login()">
+        E-mail: <input ng-required="true" type="email" ng-model="email" /><br />
+        Password: <input nq-required="true" type="password" ng-model="password" /><br />
+        <button ng-disabled="loginForm.$invalid" class="btn btn-primary" type="submit">Sign In</button>
+ </form>
+</div>

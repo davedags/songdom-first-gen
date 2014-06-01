@@ -1,0 +1,1 @@
+create table favorite (favorite_id bigint(20) unsigned not null primary key auto increment, song_id bigint(20) unsigned default null, user_id bigint(20) default null, created datetime) engine = innodb;

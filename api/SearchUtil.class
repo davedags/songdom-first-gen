@@ -1,0 +1,159 @@
+<?php
+
+class SearchUtil extends BaseUtil {
+	
+	public static function keywordSearch($keywords) {
+		$song_data = self::getSongByKeywords($keywords);
+		$suggestions = array();
+		if (!is_array($song_data)) {
+			$searchurl = 'http://search.azlyrics.com/search.php?q=' . urlencode($keywords);
+			$resp = file_get_contents($searchurl);
+			preg_match_all('|http://www\.azlyrics\.com/lyrics/(.*)\.html|i', $resp, $matches);
+			
+			if (is_array($matches[0]) && count($matches[0])) {
+				if ($url = trim($matches[0][0])) {
+					$song_data = self::getSongByURL($url);
+				}
+				array_shift($matches[0]);
+				$suggestions = $matches[0];
+			}
+		}
+		if (!is_array($song_data) && $url) {
+			$song_data = self::scrapeLyrics($url, array('keywords' => $keywords,
+								    'suggestions' => $suggestions));
+		}
+		return $song_data;
+	}
+	
+	public static function pickSuggestion($url) {
+		$lyrics = self::getLyricsByURL($url);
+		return array('lyrics' => $lyrics);
+	}
+	
+	/**
+	 *  scrape external site given an explicit url for lyrics and store in local database
+	 *
+	 **/
+	public static function scrapeLyrics($url, $args = array()) {
+		$return = null;
+		$song_vals = array();	
+		if (!empty($args['keywords'])) {
+		   	$song_vals['keywords'] = $args['keywords'];
+			//$query_clause = "keywords = '" . addslashes($args['query']) . "', ";
+		}
+		if ($source_html = file_get_contents($url)) {
+			$start_text = '<!-- start of lyrics -->';
+			$end_text = '<!-- end of lyrics -->';
+			$start_pos = strpos($source_html, $start_text) + strlen($start_text);
+			$end_pos = strpos($source_html, $end_text);
+			
+			
+			$lyrics = trim(substr($source_html, $start_pos, ($end_pos - $start_pos)));
+			$lyrics = str_replace(array('<br>', '<br />'), "", $lyrics);
+			$lyrics_by_line = explode("\n", strip_tags($lyrics));
+			$lyrics = array();
+			foreach ($lyrics_by_line as $idx => $line) {
+				$lyrics['line' . str_pad($idx, 3, 0, STR_PAD_LEFT)] = $line;
+			}	 
+			
+			if (!empty($args['suggestions']) && is_array($args['suggestions'])) {
+				foreach ($args['suggestions'] as $idx => $suggestion) {
+					$suggestions['other' . str_pad($idx, 3, 0, STR_PAD_LEFT)] = $suggestion;
+				}
+			}
+
+			$song_vals['url'] = $url;
+			$song_vals['lyrics'] = serialize($lyrics);
+			$song_vals['suggestions'] = serialize($suggestions);
+			$song_vals['created'] = $song_vals['modified'] = date('Y-m-d H:i:s');
+			
+			$GLOBALS['_db']->insert('song', $song_vals);
+			
+			$song = (array) self::getSongByURL($url);
+			$song_id = $song['song_id'];
+			$return = array(
+				'song_id' => $song_id,
+				'url' => $url,
+				'lyrics' => $lyrics,
+				'suggestions' => $suggestions
+				       );
+											
+		}
+		return $return;
+	}
+	
+	/**
+	 * returns lyrics for a song based on a specific url (to a external site)
+	 *  -- first checks local db to see if we already retrieved it
+	 **/
+	public static function getLyricsByURL($url) {
+		$song_data = self::getSongByURL($url);
+		if (is_array($song_data)) {
+			return $song_data['lyrics'];
+		} else {
+			$song_info = self::scrapeLyrics($url);
+			return is_array($song_info) ? $song_info['lyrics'] : null;
+		}
+	}
+	
+	/**
+	 * get song from local db by keyword match
+	 *
+	 **/
+	public static function getSongByKeywords($keywords) {
+	       	return self::getSong('keywords', $keywords);
+	}
+	
+	/**
+	 * get song from local db by url match
+	 *
+	 **/
+	public static function getSongByURL($url) {
+		return self::getSong('url', $url);
+	}
+	
+	/**
+	 * get song from local db by a field match
+	 * 
+	 **/
+	public static function getSong($field, $match) {
+	       $sql = "select song_id, lyrics, suggestions, url from song where $field = '" . addslashes($match) . "'";
+	       $stmt = $GLOBALS['_db']->query($sql);
+	       $row = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	       $song_data = false;
+	       if (is_array($row) && is_array($row[0]) && ($lyrics = $row[0]['lyrics'])) {
+	       	  $song_data = array(
+		  	     'song_id' => $row[0]['song_id'],
+			     'url' => $row[0]['url'],
+			     'lyrics' => unserialize($row[0]['lyrics']),
+			     'suggestions' =>  unserialize($row[0]['suggestions'])
+			     	     );
+			
+		} 
+		return $song_data;
+	}
+	
+	public static function getUserByEmail($email) {
+	       $sql = "select user_id, fullname, email from user where email = '" . addslashes($email) . "'";
+	       $stmt = $GLOBALS['_db']->query($sql);
+	       $row = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	       $user = false;
+	       if (is_array($row) && is_array($row[0])) {
+	       	  $user = $row[0];
+	       } 
+	       return $user;
+	}
+
+
+	public static function getUserFavorite($user, $song) {
+		$sql = "select favorite_id from favorite where user_id = '" . addslashes($user) . "' and song_id = '" . $song . "'";
+		$stmt = $GLOBALS['_db']->query($sql);
+		$row = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		$favorite = null;
+	  if (is_array($row) && is_array($row[0])) {
+			$favorite = $row[0]['favorite_id'];
+		}
+		return $favorite;
+	}
+}
+
