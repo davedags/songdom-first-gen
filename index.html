@@ -19,22 +19,94 @@
     <link rel="stylesheet" href="styles/core.css">
 
     <script src="bower_components/jquery/jquery.js"></script>
+    <script src="bower_components/jquery-cookie/jquery.cookie.js"></script>
     <script src="bower_components/angular/angular.js"></script>
     <!-- build:js scripts/modules.js -->
     <script src="bower_components/angular-resource/angular-resource.min.js"></script>
     <script src="bower_components/angular-route/angular-route.js"></script>
     <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
 
-    <script src="scripts/app.js"></script>
-    <script src="scripts/controllers/home.js"></script>
-    <script src="scripts/controllers/signup.js"></script>
-    <script src="scripts/controllers/login.js"></script>
-    <script src="scripts/controllers/userpanel.js"></script>
-    <script src="scripts/services/UserService.js"></script>
+      <script type="text/javascript">
+	function pausecomp(millis)
+	{
+	var date = new Date();
+	var curDate = null;
+	do { curDate = new Date(); }
+	while(curDate-date < millis);
+        }
 
+	
+         var final_transcript = '';
+        var recognizing = false;
+        var ignore_onend;
+   if (('webkitSpeechRecognition' in window)) {
+        var recognition = new webkitSpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = "en-US";
+ 
+        recognition.onstart = function () {
+            recognizing = true;
+        };
+ 
+        recognition.onend = function () {
+            recognizing = false;
+            if (ignore_onend) {
+                return;
+            }
+            if (!final_transcript) {
+                return;
+            } else {
+               $('#searchQueryID').val(final_transcript);
+	       $('#searchQueryID').trigger('input');
+	       $('#searchQueryForm').submit();
+               final_transcript = '';
+	     
+	       return;
+	   }
+        };
+ 
+        recognition.onresult = function (event) {
+	    
+	    var interim_transcript = '';
+            for (var i = event.resultIndex; i < event.results.length; ++i) {
+               if (event.results[i].isFinal) {
+                    final_transcript += event.results[i][0].transcript;
+                } else {
+                    interim_transcript += event.results[i][0].transcript;
+                }
+            }
+        };
+ 
+        function format(s) {
+            return linebreak(capitalize(s));
+        }
+ 
+        function linebreak(s) {
+            return s.replace(/\n\n/g, '<p></p>').replace(/\n/g, '<br>');
+        }
+ 
+        function capitalize(s) {
+            return s.replace(/\S/, function (m) {
+                return m.toUpperCase();
+            });
+        }
+ 
+        $(document).ready(function () {
+            recognition.start();
+            ignore_onend = false;
+        });
+
+      function startOver() {
+         recognition.start();
+         self.location.href="/#";					
+      }
+}
+      </script>						
 </head>
   <body ng-app="dagsApp">
     <div class="container-narrow">
+<!--
       <div ng-controller="UserPanelCtrl" style="float:right;padding:20px;" class="ngCloak">
 	<span ng-hide="authUser">
 	  <a href="#/login" title="Log-In">Log-In</a> | <a href="#/signup" title="Sign Up">Sign Up</a>
@@ -43,12 +115,26 @@
 	  {{ authUser.fullname }} | <a href="#" ng-click="logout()">Log-out</a>
 	</span>
       </div>
-      <h2>
-	<a style="text-decoration: none" href="/#" title="Song Domination" dng-click="$event.preventDefault()">
+ -->
+ <div class="page-header">
+
+     <h2 style="text-align: center">
+	<a style="text-decoration: none" href="javascript:startOver()" title="Song Domination" dng-click="$event.preventDefault()">
 	  Songdom
-	</a>
-      </h2>
+	
+	  </a>
+	</h2>
+<h4 style="text-align: center">	<small>No Ads.  No Nonsense.  Song Domination.</small>
+      </h4>
+</div>
        <div class="content-container" ng-view=""></div>
    </div>  
+ <script src="scripts/app.js"></script>
+    <script src="scripts/controllers/home.js"></script>
+    <script src="scripts/controllers/signup.js"></script>
+    <script src="scripts/controllers/login.js"></script>
+    <script src="scripts/controllers/userpanel.js"></script>
+    <script src="scripts/services/UserService.js"></script>
+ 
 </body>
 </html>

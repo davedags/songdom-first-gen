@@ -19,7 +19,7 @@ angular.module('dagsApp')
 			$scope.searchQuery = $scope.searchQuery || '';
 			$scope.response = $scope.response || '';
 
-			if (!$rootScope.gotFaves) {
+			if (0 && !$rootScope.gotFaves) {
 				$rootScope.gotFaves = true;
 				$http({
 						method: 'GET', 
@@ -34,9 +34,10 @@ angular.module('dagsApp')
 				$scope.gotFaves = true;
 			}
 			
-              $scope.runSearch = function() {		  
+              $scope.runSearch = function($event) {		  
 				$scope.response = '';
 				var params = {'q': $scope.searchQuery};
+
 				$http({
 						method: 'GET', 
 							url: '/api/search',
@@ -54,7 +55,8 @@ angular.module('dagsApp')
 						// when the response is available
 					}).
 				error(function(data, status, headers, config) {
-							$scope.response.lyrics = {
+
+				    $scope.response.lyrics = {
 								'url': '',
 								'error': true,
 								'lyrics': []
@@ -62,7 +64,7 @@ angular.module('dagsApp')
 
 						// or server returns response with an error status.
 					});
-								
+		  $event.preventDefault();
 			}
 
 
@@ -128,7 +130,9 @@ angular.module('dagsApp')
 			$scope.clearSearch = function($event) {
 				$scope.searchQuery = '';
 				$scope.response = '';
-				$event.preventDefault();
+			        recognition.start();
+			        $event.preventDefault();
+			    
 			}
 
 			$scope.dismissSuggestions = function($event) {

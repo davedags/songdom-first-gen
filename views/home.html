@@ -1,5 +1,5 @@
 <div class="jumbotron">
-  <form ng-submit="runSearch()">
+  <form ng-submit="runSearch($event)" Id="searchQueryForm">
     <input focus-input="response == ''" ng-target="searchTarget" id="searchQueryID" ng-model="searchQuery" name="searchQuery" type="search" placeholder="Enter Song Name ..." class="form-control input-md"  autofocus/>
     <button id="search" name="search" class="btn btn-primary">Find My Song</button> 
 		<button id="clear" name="clear" class = "btn" ng-if="response.lyrics" ng-click="clearSearch($event)">Start Over</button>
@@ -15,7 +15,7 @@
 					<li ng-repeat="suggestion in response.lyrics.suggestions"><a href="#" data="{{ suggestion }}" ng-click="showSuggestion(suggestion, $event);">{{ suggestion }}</a></li>
 			 </ul>
 			</div>
-			<h5><a href="#" ng-click="favorite(response.lyrics.song_id, $event)"><img height="15px" width="15px" src="/images/favorites.png" title="Save To Favorites" /></a> <a href="{{ response.lyrics.url }}" target="_blank" title="Open In New Window"><u>{{ response.lyrics.url }}</u></a> </h5>
+			<h5><!--<a href="#" ng-click="favorite(response.lyrics.song_id, $event)"><img height="15px" width="15px" src="/images/favorites.png" title="Save To Favorites" /></a> --><a href="{{ response.lyrics.url }}" target="_blank" title="Open In New Window"><u>{{ response.lyrics.url }}</u></a> </h5>
       <ul style="list-style:none;">
 				<li ng-repeat="line in response.lyrics.lyrics">
 					{{ line }}
