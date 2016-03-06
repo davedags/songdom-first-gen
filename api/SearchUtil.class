@@ -124,12 +124,13 @@ class SearchUtil extends BaseUtil {
 	       try {
 	       $stmt	 = $GLOBALS['_db']->query($sql);
 	       } catch (Exception $e) {	
-	       echo $e->getMessage();
-}
+               echo $e->getMessage();
+           }
 	       $row = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
+           
 	       $song_data = false;
-	       if (is_array($row) && is_array($row[0]) && ($lyrics = $row[0]['lyrics'])) {
+	       
+           if (is_array($row) && isset($row[0]) && is_array($row[0]) && ($lyrics = $row[0]['lyrics'])) {
 	       	  $song_data = array(
 		  	     'song_id' => $row[0]['song_id'],
 			     'url' => $row[0]['url'],

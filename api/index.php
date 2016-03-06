@@ -92,7 +92,7 @@ $app->post('/logout', function() use ($app) {
 });
 
 $app->get('/getauth', function() use ($app) {
-     $auth = is_array($_SESSION['auth']) ? $_SESSION['auth'] : false;
+    $auth = isset($_SESSION['auth']) && is_array($_SESSION['auth']) ? $_SESSION['auth'] : false;
      return $app->json($auth, 200);	
 });
 
