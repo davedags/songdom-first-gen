@@ -4,29 +4,31 @@ class SearchUtil extends BaseUtil {
 	
 	public static function keywordSearch($keywords) {
 		$song_data = self::getSongByKeywords($keywords);
-		$suggestions = array();
+        $suggestions = array();
 		if (!is_array($song_data)) {
-			$searchurl = 'http://search.azlyrics.com/search.php?q=' . urlencode($keywords);
+            $searchurl = 'http://songmeanings.com/query/?query=' . urlencode($keywords);
 			$resp = file_get_contents($searchurl);
-			preg_match_all('|http://www\.azlyrics\.com/lyrics/(.*)\.html|i', $resp, $matches);
-			
-			if (is_array($matches[0]) && count($matches[0])) {
-				if ($url = trim($matches[0][0])) {
-					$song_data = self::getSongByURL($url);
+			preg_match_all('|//songmeanings\.com/songs/view/(\d+)/|i', $resp, $matches);
+			$matches = array_values(array_unique($matches[0]));
+			if (is_array($matches) && !empty($matches[0])) {
+				if ($url = trim($matches[0])) {
+                    $song_data = self::getSongByURL($url);
 				}
-				array_shift($matches[0]);
-				$suggestions = $matches[0];
+				array_shift($matches);
+				$suggestions = array_slice($matches, 0, 4);
 			}
 		}
 		if (!is_array($song_data) && $url) {
 			$song_data = self::scrapeLyrics($url, array('keywords' => $keywords,
-								    'suggestions' => $suggestions));
+                                                        'suggestions' => $suggestions));
 		}
+        //temp hack, suggestions such on songmeanings
+        $song_data['suggestions'] = [];
 		return $song_data;
 	}
 	
 	public static function pickSuggestion($url) {
-		$lyrics = self::getLyricsByURL($url);
+        $lyrics = self::getLyricsByURL($url);
 		return array('lyrics' => $lyrics);
 	}
 	
@@ -41,9 +43,9 @@ class SearchUtil extends BaseUtil {
 		   	$song_vals['keywords'] = $args['keywords'];
 			//$query_clause = "keywords = '" . addslashes($args['query']) . "', ";
 		}
-		if ($source_html = file_get_contents($url)) {
-			$start_text = '<!-- start of lyrics -->';
-			$end_text = '<!-- end of lyrics -->';
+		if ($source_html = file_get_contents(self::cleanURL($url))) {
+			$start_text = '<div class="holder lyric-box">';
+			$end_text = '<div style="min-height: 25px; margin:0; padding: 12px 0 0 0; border-top: 1px dotted #ddd;">';
 			$start_pos = strpos($source_html, $start_text) + strlen($start_text);
 			$end_pos = strpos($source_html, $end_text);
 			
@@ -66,11 +68,12 @@ class SearchUtil extends BaseUtil {
 			$song_vals['lyrics'] = serialize($lyrics);
 			$song_vals['suggestions'] = serialize($suggestions);
 			$song_vals['created'] = $song_vals['modified'] = date('Y-m-d H:i:s');
-			
+
 			$GLOBALS['_db']->insert('song', $song_vals);
 			
 			$song = (array) self::getSongByURL($url);
 			$song_id = $song['song_id'];
+
 			$return = array(
 				'song_id' => $song_id,
 				'url' => $url,
@@ -118,8 +121,13 @@ class SearchUtil extends BaseUtil {
 	 **/
 	public static function getSong($field, $match) {
 	       $sql = "select song_id, lyrics, suggestions, url from song where $field = '" . addslashes($match) . "'";
-	       $stmt = $GLOBALS['_db']->query($sql);
+	       try {
+	       $stmt	 = $GLOBALS['_db']->query($sql);
+	       } catch (Exception $e) {	
+	       echo $e->getMessage();
+}
 	       $row = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 	       $song_data = false;
 	       if (is_array($row) && is_array($row[0]) && ($lyrics = $row[0]['lyrics'])) {
 	       	  $song_data = array(
@@ -155,5 +163,12 @@ class SearchUtil extends BaseUtil {
 		}
 		return $favorite;
 	}
+    
+    public static function cleanURL($url) {
+        if (substr($url, 0, 2) == '//') {
+            $url = 'http:' . $url;
+        }
+        return $url;
+    }
 }
 

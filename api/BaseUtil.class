@@ -3,7 +3,7 @@
 class BaseUtil {
 	
 	public static function initDB($args = array()) {
-		$db = new PDO('mysql:host=localhost;dbname=davedago_dirty;charset=utf8', 'davedago_dirty', 'dirty123');
+		$db = new PDO('mysql:host=' . $_ENV['SONGDOM_DB_HOST'] . ';dbname=' . $_ENV['SONGDOM_DB'] . ';charset=utf8', $_ENV['SONGDOM_DB_USER'], $_ENV['SONGDOM_DB_PASSWORD']);
 		$GLOBALS['_db'] = $db;
 		return $db;
 	}

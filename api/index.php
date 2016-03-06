@@ -1,8 +1,12 @@
 <?php
-
-//ini_set("display_errors", "on");
+ini_set("display_errors", "off");
 session_start();
+
 require_once __DIR__.'/../vendor/autoload.php';
+
+$dotenv = new Dotenv\Dotenv(__DIR__);
+$dotenv->load();
+
 require_once('./BaseUtil.class');
 require_once('./SearchUtil.class');
 
@@ -11,10 +15,10 @@ $app = new Silex\Application();
 $app->register(new Silex\Provider\DoctrineServiceProvider(), array(
     'db.options' => array (
         'driver'    => 'pdo_mysql',
-        'host'      => 'localhost',
-        'dbname'    => 'dirtydags',
-        'user'      => 'dirtydags',
-        'password'  => 'dirty123',
+        'host'      => $_ENV['SONGDOM_DB_HOST'],
+        'dbname'    => $_ENV['SONGDOM_DB'],
+        'user'      => $_ENV['SONGDOM_DB_USER'],
+        'password'  => $_ENV['SONGDOM_DB_PASSWORD'],
         'charset'   => 'utf8',
     )
 ));
@@ -40,9 +44,12 @@ $app->get('/search', function() use ($app) {
 	break;
 	
      default:
+
+
 	$return = SearchUtil::keywordSearch($query);
+
 	break;
-    }
+	}
     return $app->json($return);
 });
 

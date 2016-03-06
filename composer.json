@@ -1,0 +1,8 @@
+{
+    "require" : {
+        "vlucas/phpdotenv": "dev-master",
+        "silex/silex":  "1.1.2",
+        "doctrine/dbal": "2.4."
+    }
+}
+
