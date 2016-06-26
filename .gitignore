@@ -1,3 +1,5 @@
 api/.env
 vendor/
 bower_components/
+api/php_errors.log
+
